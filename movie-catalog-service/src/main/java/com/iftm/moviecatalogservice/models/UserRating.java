@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserRating {
 
+	private String userId;
 	private List<Rating> userRating;
 
 }
