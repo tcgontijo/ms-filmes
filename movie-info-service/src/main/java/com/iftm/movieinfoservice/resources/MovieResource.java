@@ -1,19 +1,33 @@
 package com.iftm.movieinfoservice.resources;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.iftm.movieinfoservice.models.Movie;
+import com.iftm.movieinfoservice.models.MovieSummary;
 
 @RestController
 @RequestMapping("/movies")
 public class MovieResource {
 
+	@Value("${api.key}")
+	private String apiKey;
+
+	@Autowired
+	private RestTemplate restTemplate;
+
 	@GetMapping("/{movieId}")
 	public Movie getMovieInfo(@PathVariable("movieId") String movieId) {
-		return new Movie(movieId, "Nome de teste");
+		MovieSummary movieSummary = restTemplate.getForObject(
+				"https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey
+				//"https://api.themoviedb.org/3/movie/550?api_key=1b63bb5622b74e86de0903db2931b442"
+				, MovieSummary.class);
+		return new Movie(movieId, movieSummary.getTitle(), movieSummary.getOverview());
 	}
 
 }
